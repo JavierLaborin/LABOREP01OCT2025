@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Información - Imerys</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #475569, #64748b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .title-section h1 {
+            color: #475569;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .title-section p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .selected-date {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .cfe-horario {
+            background: #10b981;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .time-warning {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            color: #475569;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        /* Pestañas */
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .turnos-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .turnos-table th,
+        .turnos-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .turnos-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .turnos-table th:first-child,
+        .turnos-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .turnos-table input {
+            width: 80px;
+            padding: 4px 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .calculated {
+            background: #f1f5f9 !important;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .product-container {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .downtime-section {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .downtime-title {
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-info {
+                order: -1;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                min-width: 120px;
+                font-size: 12px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .turnos-table input {
+                width: 60px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">I</div>
+                <div class="title-section">
+                    <h1>Sistema de Captura de Información</h1>
+                    <p>Reportes de Producción Diaria - Imerys Wollastonita</p>
+                </div>
+            </div>
+            <div class="date-info">
+                <div class="selected-date" id="selectedDate">
+                    Seleccionar fecha
+                </div>
+                <div class="cfe-horario" id="cfeHorario">
+                    CFE Horario Punta: Calculando...
+                </div>
+                <div class="time-warning" id="timeWarning">
+                    ⚠️ No está trabajando en su horario actual
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Información del Turno -->
+        <div class="section">
+            <h2 class="section-title">Información del Turno</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="workDate">Fecha de Trabajo</label>
+                    <input type="date" id="workDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="operatorEmail">Operador (Email Google Workspace)</label>
+                    <input type="email" id="operatorEmail" placeholder="usuario@empresa.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Turno Actual</label>
+                    <div id="currentShift" style="padding: 10px; background: #f1f5f9; border-radius: 6px;">
+                        Detectando...
+                    </div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Sistema de Pestañas -->
+        <div class="section">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('trituracion-harrp')">Trituración y HARRP</button>
+                <button class="tab-button" onclick="switchTab('planta-humeda')">Planta Húmeda</button>
+                <button class="tab-button" onclick="switchTab('planta-seca')">Planta Seca</button>
+                <button class="tab-button" onclick="switchTab('tratamiento')">Planta de Tratamiento</button>
+                <button class="tab-button" onclick="switchTab('empaque')">Empaque</button>
+            </div>
+
+            <!-- Pestaña 1: Trituración y HARRP -->
+            <div id="trituracion-harrp" class="tab-content active">
+                <!-- Trituración -->
+                <h3 class="section-title">Trituración</h3>
+                <table class="turnos-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Turno Día</th>
+                            <th>Turno Noche</th>
+                            <th>Total Día</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Horas</td>
+                            <td><input type="number" id="trituracion_horas_dia" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="trituracion_horas_noche" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="trituracion_horas_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Toneladas</td>
+                            <td><input type="number" id="trituracion_ton_dia" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="trituracion_ton_noche" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="trituracion_ton_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Rate (tph)</td>
+                            <td><input type="number" id="trituracion_rate_dia" class="calculated" readonly></td>
+                            <td><input type="number" id="trituracion_rate_noche" class="calculated" readonly></td>
+                            <td><input type="number" id="trituracion_rate_total" class="calculated" readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- HARRP -->
+                <h3 class="section-title" style="margin-top: 30px;">HARRP</h3>
+                <button class="btn btn-success" onclick="addProduct('harrp')">+ Agregar Producto HARRP</button>
+                <div id="harrpContainer"></div>
+            </div>
+
+            <!-- Pestaña 2: Planta Húmeda -->
+            <div id="planta-humeda" class="tab-content">
+                <!-- RodMill -->
+                <h3 class="section-title">RodMill</h3>
+                <table class="turnos-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Turno Día</th>
+                            <th>Turno Noche</th>
+                            <th>Total Día</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Horas</td>
+                            <td><input type="number" id="rodmill_horas_dia" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="rodmill_horas_noche" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="rodmill_horas_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Toneladas</td>
+                            <td><input type="number" id="rodmill_ton_dia" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="rodmill_ton_noche" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="rodmill_ton_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Rate (tph)</td>
+                            <td><input type="number" id="rodmill_rate_dia" class="calculated" readonly></td>
+                            <td><input type="number" id="rodmill_rate_noche" class="calculated" readonly></td>
+                            <td><input type="number" id="rodmill_rate_total" class="calculated" readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Filtros de Disco -->
+                <h3 class="section-title" style="margin-top: 30px;">Filtros de Disco</h3>
+                <table class="turnos-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Turno Día</th>
+                            <th>Turno Noche</th>
+                            <th>Total Día</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Horas</td>
+                            <td><input type="number" id="filtros_horas_dia" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_horas_noche" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_horas_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Ton Húmedas</td>
+                            <td><input type="number" id="filtros_humedas_dia" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_humedas_noche" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_humedas_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Ton Secas</td>
+                            <td><input type="number" id="filtros_secas_dia" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_secas_noche" step="0.1" min="0" placeholder="0.0"></td>
+                            <td><input type="number" id="filtros_secas_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td>Rate Seco (tph)</td>
+                            <td><input type="number" id="filtros_rate_dia" class="calculated" readonly></td>
+                            <td><input type="number" id="filtros_rate_noche" class="calculated" readonly></td>
+                            <td><input type="number" id="filtros_rate_total" class="calculated" readonly></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600; color: #059669; background: #dcfce7;">Recuperación (%)</td>
+                            <td><input type="number" id="filtros_recup_dia" class="calculated" style="background: #dcfce7 !important; color: #059669 !important; font-weight: 600; border: 2px solid #10b981;" readonly></td>
+                            <td><input type="number" id="filtros_recup_noche" class="calculated" style="background: #dcfce7 !important; color: #059669 !important; font-weight: 600; border: 2px solid #10b981;" readonly></td>
+                            <td><input type="number" id="filtros_recup_total" class="calculated" style="background: #dcfce7 !important; color: #059669 !important; font-weight: 600; border: 2px solid #10b981; font-size: 15px;" readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pestaña 3: Planta Seca -->
+            <div id="planta-seca" class="tab-content">
+                <!-- Pebble Mill -->
+                <h3 class="section-title">Pebble Mill</h3>
+                <button class="btn btn-success" onclick="addProduct('pebble')">+ Agregar Producto Pebble Mill</button>
+                <div id="pebbleContainer"></div>
+
+                <!-- JetMill -->
+                <h3 class="section-title" style="margin-top: 30px;">JetMill</h3>
+                <button class="btn btn-success" onclick="addProduct('jet')">+ Agregar Producto JetMill</button>
+                <div id="jetContainer"></div>
+
+                <!-- ACM -->
+                <h3 class="section-title" style="margin-top: 30px;">ACM</h3>
+                <button class="btn btn-success" onclick="addProduct('acm')">+ Agregar Producto ACM</button>
+                <div id="acmContainer"></div>
+
+                <!-- Clasificador MS-20 -->
+                <h3 class="section-title" style="margin-top: 30px;">Clasificador MS-20</h3>
+                <button class="btn btn-success" onclick="addProduct('clasificador')">+ Agregar Producto Clasificador</button>
+                <div id="clasificadorContainer"></div>
+            </div>
+
+            <!-- Pestaña 4: Planta de Tratamiento -->
+            <div id="tratamiento" class="tab-content">
+                <h3 class="section-title">Planta de Tratamiento</h3>
+                <button class="btn btn-success" onclick="addProduct('tratamiento')">+ Agregar Producto Tratamiento</button>
+                <div id="tratamientoContainer"></div>
+            </div>
+
+            <!-- Pestaña 5: Empaque -->
+            <div id="empaque" class="tab-content">
+                <!-- Bulk Bag -->
+                <h3 class="section-title">Bulk Bag</h3>
+                <button class="btn btn-success" onclick="addProduct('bulkbag')">+ Agregar Producto Bulk Bag</button>
+                <div id="bulkbagContainer"></div>
+
+                <!-- Bagging Line -->
+                <h3 class="section-title" style="margin-top: 30px;">Bagging Line</h3>
+                <button class="btn btn-success" onclick="addProduct('bagging')">+ Agregar Producto Bagging Line</button>
+                <div id="baggingContainer"></div>
+
+                <!-- Línea J -->
+                <h3 class="section-title" style="margin-top: 30px;">Línea J (Reempaque)</h3>
+                <button class="btn btn-success" onclick="addProduct('lineaj')">+ Agregar Producto Línea J</button>
+                <div id="lineajContainer"></div>
+            </div>
+        </div>
+
+        <!-- Guardar -->
+        <div class="section">
+            <button class="btn btn-primary" onclick="saveData()" style="font-size: 16px; padding: 15px 30px;">
+                Guardar Información del Turno
+            </button>
+            <div class="message error" id="errorMessage"></div>
+            <div class="message success" id="successMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        let productCounters = {
+            harrp: 0,
+            pebble: 0,
+            jet: 0,
+            acm: 0,
+            clasificador: 0,
+            tratamiento: 0,
+            bulkbag: 0,
+            bagging: 0,
+            lineaj: 0
+        };
+
+        const productOptions = {
+            harrp: [
+                { value: 'h20x40l', name: 'HARRP 20X40 L' },
+                { value: 'h20x40s', name: 'HARRP 20X40 S' },
+                { value: 'h40', name: 'HARRP -40' },
+                { value: 'h20_40m', name: 'HARRP -20+40M' }
+            ],
+            pebble: [
+                { value: 'm200', name: 'M200' },
+                { value: 'm325', name: 'M325' },
+                { value: 'm400', name: 'M400' },
+                { value: 'm1250', name: 'M1250' }
+            ],
+            jet: [
+                { value: 'm15', name: 'M15' },
+                { value: 'a3000', name: 'A3000' },
+                { value: 'a4000', name: 'A4000' },
+                { value: 'm4w', name: 'M4W' }
+            ],
+            acm: [
+                { value: 'm15', name: 'M15' },
+                { value: 'mg', name: 'MG' },
+                { value: 'm20', name: 'M20' }
+            ],
+            clasificador: [
+                { value: 'ms20_std', name: 'MS-20 Estándar' },
+                { value: 'ms20_spec', name: 'MS-20 Especial' }
+            ],
+            tratamiento: [
+                { value: 'wollastocoat', name: 'Wollastocoat' },
+                { value: 'coating1', name: 'Coating Tipo 1' },
+                { value: 'coating2', name: 'Coating Tipo 2' }
+            ],
+            bulkbag: [
+                { value: 'linea_a', name: 'Línea A' },
+                { value: 'linea_b', name: 'Línea B' }
+            ],
+            bagging: [
+                { value: 'bagging_std', name: 'Empaque Estándar' },
+                { value: 'bagging_spec', name: 'Empaque Especial' }
+            ],
+            lineaj: [
+                { value: 'reempaque_std', name: 'Reempaque Estándar' },
+                { value: 'reempaque_spec', name: 'Reempaque Especial' }
+            ]
+        };
+
+        function init() {
+            document.getElementById('workDate').valueAsDate = new Date();
+            updateDateDisplay();
+            setCurrentShift();
+            
+            // Agregar productos por defecto en cada sección
+            addProduct('harrp');
+            addProduct('pebble');
+            addProduct('jet');
+            addProduct('acm');
+            addProduct('clasificador');
+            addProduct('tratamiento');
+            addProduct('bulkbag');
+            addProduct('bagging');
+            addProduct('lineaj');
+            
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            document.addEventListener('input', function(e) {
+                if (e.target.type === 'number' && !e.target.classList.contains('calculated')) {
+                    const id = e.target.id;
+                    const parts = id.split('_');
+                    
+                    if (parts.length >= 3) {
+                        const area = parts[0];
+                        const metric = parts[1];
+                        calculateTotalsAndRates(area, metric);
+                    }
+                    updateProgress();
+                }
+            });
+            
+            document.getElementById('workDate').addEventListener('change', updateDateDisplay);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function updateDateDisplay() {
+            const dateInput = document.getElementById('workDate');
+            const selectedDate = document.getElementById('selectedDate');
+            const cfeHorario = document.getElementById('cfeHorario');
+            
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                selectedDate.textContent = date.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                cfeHorario.textContent = `CFE Horario Punta: ${getCFESchedule(date)}`;
+                checkWorkingTime();
+            }
+        }
+
+        function setCurrentShift() {
+            const now = new Date();
+            const hour = now.getHours();
+            const shiftDiv = document.getElementById('currentShift');
+            
+            if (hour >= 8 && hour < 20) {
+                shiftDiv.textContent = 'Día (8:00 AM - 8:00 PM)';
+                shiftDiv.style.background = '#dcfce7';
+                shiftDiv.style.color = '#16a34a';
+            } else {
+                shiftDiv.textContent = 'Noche (8:00 PM - 8:00 AM)';
+                shiftDiv.style.background = '#ede9fe';
+                shiftDiv.style.color = '#7c3aed';
+            }
+        }
+
+        function getCFESchedule(date) {
+            const month = date.getMonth() + 1;
+            const dayOfWeek = date.getDay();
+            
+            if (month >= 2 && month <= 4) {
+                return dayOfWeek >= 1 && dayOfWeek <= 5 ? 'Lunes a Viernes: 19:00 - 22:00' : 'Sin horario punta';
+            } else if (month >= 5 && month <= 7) {
+                return dayOfWeek >= 1 && dayOfWeek <= 5 ? 'Lunes a Viernes: 20:00 - 22:00' : 'Sin horario punta';
+            } else if (month >= 8 && month <= 10) {
+                return dayOfWeek >= 1 && dayOfWeek <= 5 ? 'Lunes a Viernes: 20:00 - 22:00' : 'Sin horario punta';
+            } else {
+                if (dayOfWeek >= 1 && dayOfWeek <= 5) return 'Lunes a Viernes: 18:00 - 22:00';
+                if (dayOfWeek === 6) return 'Sábado: 19:00 - 21:00';
+                return 'Sin horario punta';
+            }
+        }
+
+        function checkWorkingTime() {
+            const selectedDate = new Date(document.getElementById('workDate').value);
+            const today = new Date();
+            const warning = document.getElementById('timeWarning');
+            
+            if (selectedDate.toDateString() !== today.toDateString()) {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        function addProduct(type) {
+            const container = document.getElementById(`${type}Container`);
+            const id = `${type}_${productCounters[type]}`;
+            const options = productOptions[type];
+            
+            // Determinar si necesita campos de lote/item y sección de paros
+            const needsLoteItem = ['harrp', 'tratamiento', 'bulkbag', 'bagging', 'lineaj'].includes(type);
+            const needsDowntime = ['pebble', 'jet', 'acm', 'tratamiento'].includes(type);
+            
+            const loteItemSection = needsLoteItem ? `
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>No. Item Día</label>
+                        <input type="text" id="${id}_item_dia" placeholder="">
+                    </div>
+                    <div class="input-group">
+                        <label>Lote Día</label>
+                        <input type="text" id="${id}_lote_dia" placeholder="">
+                    </div>
+                    <div class="input-group">
+                        <label>No. Item Noche</label>
+                        <input type="text" id="${id}_item_noche" placeholder="">
+                    </div>
+                    <div class="input-group">
+                        <label>Lote Noche</label>
+                        <input type="text" id="${id}_lote_noche" placeholder="">
+                    </div>
+                </div>
+            ` : '';
+            
+            const html = `
+                <div class="product-container" id="${id}">
+                    <div class="product-header">
+                        <div>
+                            <select onchange="updateProductTitle('${id}', '${type}', this.value)">
+                                <option value="">Seleccionar producto ${type.toUpperCase()}</option>
+                                ${options.map(p => `<option value="${p.value}">${p.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        ${productCounters[type] > 0 ? `<button class="btn btn-danger" onclick="removeProduct('${id}')">Eliminar</button>` : ''}
+                    </div>
+                    
+                    ${loteItemSection}
+                    
+                    <table class="turnos-table">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Turno Día</th>
+                                <th>Turno Noche</th>
+                                <th>Total Día</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Horas</td>
+                                <td><input type="number" id="${id}_horas_dia" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                                <td><input type="number" id="${id}_horas_noche" step="0.1" min="0" max="12" placeholder="0.0"></td>
+                                <td><input type="number" id="${id}_horas_total" class="calculated" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Toneladas</td>
+                                <td><input type="number" id="${id}_ton_dia" step="0.1" min="0" placeholder="0.0"></td>
+                                <td><input type="number" id="${id}_ton_noche" step="0.1" min="0" placeholder="0.0"></td>
+                                <td><input type="number" id="${id}_ton_total" class="calculated" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Rate (tph)</td>
+                                <td><input type="number" id="${id}_rate_dia" class="calculated" readonly></td>
+                                <td><input type="number" id="${id}_rate_noche" class="calculated" readonly></td>
+                                <td><input type="number" id="${id}_rate_total" class="calculated" readonly></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    ${needsDowntime ? `
+                    <div class="downtime-section">
+                        <div class="downtime-title">Paros y Tiempos Muertos</div>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Hrs Paro Programado</label>
+                                <input type="number" id="${id}_paro_prog" step="0.1" min="0" placeholder="0.0">
+                            </div>
+                            <div class="input-group">
+                                <label>Hrs Paro No Programado</label>
+                                <input type="number" id="${id}_paro_no_prog" step="0.1" min="0" placeholder="0.0">
+                            </div>
+                            <div class="input-group">
+                                <label>Hrs Paro Horario Punta CFE</label>
+                                <input type="number" id="${id}_paro_cfe" step="0.1" min="0" placeholder="0.0">
+                            </div>
+                            <div class="input-group">
+                                <label>Comentarios/Justificación</label>
+                                <input type="text" id="${id}_comentarios" placeholder="Motivo del paro">
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+            productCounters[type]++;
+            updateProgress();
+        }
+
+        function updateProductTitle(id, type, value) {
+            const product = productOptions[type].find(p => p.value === value);
+            if (product) {
+                const container = document.getElementById(id);
+                const select = container.querySelector('select');
+                
+                const headerDiv = select.parentElement;
+                headerDiv.innerHTML = `
+                    <strong style="color: #475569; font-size: 16px;">${product.name}</strong>
+                    <button class="btn" style="background: #64748b; color: white; font-size: 11px; padding: 4px 8px;" onclick="resetProduct('${id}', '${type}')">Cambiar</button>
+                `;
+                
+                // Solo actualizar placeholders si existen los campos
+                const itemDiaEl = document.getElementById(`${id}_item_dia`);
+                const loteDiaEl = document.getElementById(`${id}_lote_dia`);
+                const itemNocheEl = document.getElementById(`${id}_item_noche`);
+                const loteNocheEl = document.getElementById(`${id}_lote_noche`);
+                
+                if (itemDiaEl) itemDiaEl.placeholder = `${value.toUpperCase()}001`;
+                if (loteDiaEl) loteDiaEl.placeholder = 'L2025001';
+                if (itemNocheEl) itemNocheEl.placeholder = `${value.toUpperCase()}002`;
+                if (loteNocheEl) loteNocheEl.placeholder = 'L2025002';
+            }
+        }
+
+        function resetProduct(id, type) {
+            const container = document.getElementById(id);
+            const headerDiv = container.querySelector('.product-header div');
+            const options = productOptions[type];
+            
+            headerDiv.innerHTML = `
+                <select onchange="updateProductTitle('${id}', '${type}', this.value)">
+                    <option value="">Seleccionar producto ${type.toUpperCase()}</option>
+                    ${options.map(p => `<option value="${p.value}">${p.name}</option>`).join('')}
+                </select>
+            `;
+            
+            // Limpiar campos si existen
+            const fields = ['item_dia', 'lote_dia', 'item_noche', 'lote_noche'];
+            fields.forEach(field => {
+                const element = document.getElementById(`${id}_${field}`);
+                if (element) {
+                    element.value = '';
+                    element.placeholder = '';
+                }
+            });
+        }
+
+        function removeProduct(id) {
+            document.getElementById(id).remove();
+            updateProgress();
+        }
+
+        function calculateTotalsAndRates(area, metric) {
+            const diaElement = document.getElementById(`${area}_${metric}_dia`);
+            const nocheElement = document.getElementById(`${area}_${metric}_noche`);
+            const totalElement = document.getElementById(`${area}_${metric}_total`);
+            
+            if (!diaElement || !nocheElement || !totalElement) return;
+            
+            const diaValue = parseFloat(diaElement.value) || 0;
+            const nocheValue = parseFloat(nocheElement.value) || 0;
+            const total = diaValue + nocheValue;
+            
+            totalElement.value = total > 0 ? total.toFixed(2) : '';
+            
+            if (metric === 'horas' || metric === 'ton') {
+                calculateRates(area);
+            }
+            
+            if (area === 'filtros') {
+                calculateFiltrosSpecial();
+            }
+        }
+
+        function calculateRates(area) {
+            ['dia', 'noche', 'total'].forEach(turno => {
+                const horasEl = document.getElementById(`${area}_horas_${turno}`);
+                const tonEl = document.getElementById(`${area}_ton_${turno}`);
+                const rateEl = document.getElementById(`${area}_rate_${turno}`);
+                
+                if (horasEl && tonEl && rateEl) {
+                    const horas = parseFloat(horasEl.value) || 0;
+                    const ton = parseFloat(tonEl.value) || 0;
+                    
+                    if (horas > 0) {
+                        rateEl.value = (ton / horas).toFixed(2);
+                    } else {
+                        rateEl.value = '';
+                    }
+                }
+            });
+        }
+
+        function calculateFiltrosSpecial() {
+            ['dia', 'noche', 'total'].forEach(turno => {
+                const horasEl = document.getElementById(`filtros_horas_${turno}`);
+                const secasEl = document.getElementById(`filtros_secas_${turno}`);
+                const rateEl = document.getElementById(`filtros_rate_${turno}`);
+                const rodmillEl = document.getElementById(`rodmill_ton_${turno}`);
+                const recupEl = document.getElementById(`filtros_recup_${turno}`);
+                
+                if (horasEl && secasEl && rateEl) {
+                    const horas = parseFloat(horasEl.value) || 0;
+                    const secas = parseFloat(secasEl.value) || 0;
+                    
+                    if (horas > 0) {
+                        rateEl.value = (secas / horas).toFixed(2);
+                    }
+                }
+                
+                if (rodmillEl && secasEl && recupEl) {
+                    const rodmill = parseFloat(rodmillEl.value) || 0;
+                    const secas = parseFloat(secasEl.value) || 0;
+                    
+                    if (rodmill > 0) {
+                        recupEl.value = ((secas / rodmill) * 100).toFixed(2);
+                    }
+                }
+            });
+        }
+
+        function updateProgress() {
+            const totalInputs = document.querySelectorAll('input[type="number"]:not(.calculated)').length;
+            const filledInputs = Array.from(document.querySelectorAll('input[type="number"]:not(.calculated)')).filter(i => i.value).length;
+            const progress = totalInputs > 0 ? (filledInputs / totalInputs) * 100 : 0;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function saveData() {
+            const date = document.getElementById('workDate').value;
+            const operator = document.getElementById('operatorEmail').value;
+            
+            if (!date || !operator) {
+                showMessage('error', 'Fecha y operador son obligatorios');
+                return;
+            }
+            
+            showMessage('success', 'Datos guardados exitosamente');
+            console.log('Datos guardados:', { date, operator });
+        }
+
+        function showMessage(type, text) {
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (type === 'error') {
+                errorMsg.textContent = text;
+                errorMsg.style.display = 'block';
+            } else {
+                successMsg.textContent = text;
+                successMsg.style.display = 'block';
+            }
+        }
+
+        // Inicializar cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Actualizar turno cada minuto
+        setInterval(setCurrentShift, 60000);
+    </script>
+</body>
+</html>
